@@ -71,9 +71,10 @@ html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x
   gap:3px;width:100%;
 }
 .cell{
-  aspect-ratio:1/1;background:var(--card);border:1px solid var(--border);border-radius:5px;
+  aspect-ratio:1/1;
+  background:var(--card);border:1px solid var(--border);border-radius:5px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:3px 2px;
+  text-align:center;padding:2px 1px;
   cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:hidden;
   transition:border-color .15s;
 }
@@ -85,11 +86,20 @@ html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x
 .cell.gap{background:transparent;border:none;aspect-ratio:auto;padding:0;cursor:default;pointer-events:none}
 .cell.has-recent{border-color:var(--green-mid)}
 
-.cn{font-size:9.5px;font-weight:600;color:var(--text);line-height:1.25;word-break:break-all;font-family:var(--ff)}
-.cn.ph{color:var(--muted);font-weight:400;font-style:italic}
-.cn.wh{color:#fff;font-size:10px;line-height:1.6;font-style:italic}
-.cn.gn{color:var(--green);font-size:9px;font-weight:500}
-.cc{font-size:8px;color:var(--sub);margin-top:2px;font-family:var(--fs)}
+/* cell name — smart line breaking for 4-char names */
+.cn{
+  font-size:8.5px;font-weight:600;color:var(--text);
+  line-height:1.25;word-break:break-all;
+  font-family:var(--ff);
+  /* break every 2 chars for CJK */
+  overflow-wrap:break-word;
+  max-width:90%;
+}
+.cn.ph{color:var(--muted);font-weight:400;font-style:italic;font-size:7.5px}
+/* center big cell — no italic, slightly larger */
+.cn.wh{color:#fff;font-size:9px;line-height:1.5;font-style:normal;font-weight:600}
+.cn.gn{color:var(--green);font-size:8px;font-weight:500}
+.cc{font-size:7.5px;color:var(--sub);margin-top:1px;font-family:var(--fs)}
 .cc.no{color:var(--muted)}
 
 /* ── activity strip ── */
@@ -102,15 +112,11 @@ html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x
 }
 .act-label{font-size:10px;color:var(--muted);font-family:var(--fs);margin-bottom:7px;letter-spacing:.3px}
 .act-dots{display:flex;flex-wrap:wrap;gap:4px}
-.dot{
-  width:10px;height:10px;border-radius:2px;
-  background:var(--green-light);border:1px solid #c8e0d4;
-  flex-shrink:0;
-}
+.dot{width:10px;height:10px;border-radius:2px;background:var(--green-light);border:1px solid #c8e0d4;flex-shrink:0}
 .dot.fill{background:var(--green);border-color:var(--green)}
 .dot.dim{background:#e8e3da;border-color:#ddd}
 
-/* ── overlay ── */
+/* ── overlay / sheet ── */
 #ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;align-items:flex-end;justify-content:center}
 #ov.open{display:flex}
 #sheet{
@@ -132,18 +138,10 @@ textarea{resize:none;line-height:1.55}
 .btn-sn{width:100%;margin:8px 0 16px;padding:9px;background:var(--green-light);color:var(--green);border:1px solid #a8d5be;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--fs)}
 .btn-add{width:100%;margin-top:9px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--fs)}
 .btn-add:active{opacity:.85}
-
-/* mood row */
 .mood-row{display:flex;gap:8px;margin-top:10px;margin-bottom:2px}
-.mood-btn{
-  flex:1;padding:8px 4px;border-radius:8px;border:1px solid #ddd;
-  background:#fafafa;font-size:12px;color:#888;cursor:pointer;font-family:var(--fs);
-  transition:border-color .15s,background .15s;line-height:1.3;text-align:center;
-}
+.mood-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid #ddd;background:#fafafa;font-size:12px;color:#888;cursor:pointer;font-family:var(--fs);transition:border-color .15s,background .15s;line-height:1.3;text-align:center}
 .mood-btn.sel{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:500}
 .mood-hint{font-size:10px;color:var(--muted);font-family:var(--fs);margin-bottom:8px}
-
-/* logs */
 .lw{margin-top:18px;border-top:1px solid #eee;padding-top:14px}
 .lhd{font-size:11px;color:#999;margin-bottom:10px;font-family:var(--fs);font-weight:500;letter-spacing:.3px}
 .le{background:var(--log-bg);border-radius:7px;padding:10px 11px;margin-bottom:8px;border:1px solid #e8e3da}
@@ -162,8 +160,8 @@ textarea{resize:none;line-height:1.55}
 <div id="topbar">
   <h1>曼陀羅人生支點</h1>
   <div class="tabs">
-    <button class="tab on" onclick="switchView('outer')">外層</button>
-    <button class="tab"    onclick="switchView('inner')">中心</button>
+    <button class="tab on" onclick="switchView('outer')">發散</button>
+    <button class="tab"    onclick="switchView('inner')">聚焦</button>
   </div>
 </div>
 
@@ -220,8 +218,8 @@ function defaultS(){
   return {
     outer: DEF.map(sec => sec.map(n => mk(n))),
     inner: DEF_INNER.map(sec => sec.map(n => mk(n))),
-    center: mk('Get\na\nLife'),
-    activity: [],   // ISO date strings (YYYY-MM-DD)
+    center: mk('Get a Life'),
+    activity: [],
     dailyIdx: 0,
     dailyDate: ''
   };
@@ -237,6 +235,17 @@ function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.get
 function fmtDate(iso){ const d=new Date(iso); return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0'); }
 function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+
+/* ── smart name display: 4 CJK chars → 2+2 lines ── */
+function formatCellName(name){
+  if(!name) return '';
+  // count CJK chars
+  const cjk = (name.match(/[\u3000-\u9fff\uf900-\ufaff]/g)||[]).length;
+  if(cjk === 4 && name.length === 4){
+    return name.slice(0,2) + '\n' + name.slice(2);
+  }
+  return name;
+}
 
 /* ═══════════ DAILY QUESTIONS ═══════════ */
 const QUESTIONS = [
@@ -280,18 +289,13 @@ function nextQ(){
 
 /* ═══════════ MEMORY ═══════════ */
 function initMemory(){
-  // collect all logs with text
   const all = [];
   S.outer.forEach(sec => sec.forEach(c => c.logs && c.logs.forEach(l => all.push(l))));
   S.inner.forEach(sec => sec.forEach(c => c.logs && c.logs.forEach(l => all.push(l))));
-
-  if(all.length < 2) return; // need at least 2 entries before showing memories
-
-  // pick a log from at least 3 days ago
+  if(all.length < 2) return;
   const cutoff = Date.now() - 3*24*60*60*1000;
   const old = all.filter(l => new Date(l.date).getTime() < cutoff);
   if(!old.length) return;
-
   const pick = old[Math.floor(Math.random() * old.length)];
   const preview = pick.text.length > 60 ? pick.text.slice(0,60)+'…' : pick.text;
   document.getElementById('mem-text').textContent = '「' + preview + '」';
@@ -303,26 +307,22 @@ function initMemory(){
 function recordActivity(){
   const today = todayStr();
   if(!S.activity) S.activity = [];
-  if(!S.activity.includes(today)){
-    S.activity.push(today);
-    save();
-  }
+  if(!S.activity.includes(today)){ S.activity.push(today); save(); }
 }
 
 function renderActivity(){
   recordActivity();
   const el = document.getElementById('act-dots');
   el.innerHTML = '';
-  // show last 60 days
   const days = 60;
   const today = new Date();
   const set = new Set(S.activity || []);
-  for(let i = days-1; i >= 0; i--){
+  for(let i=days-1; i>=0; i--){
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     const dot = document.createElement('div');
-    dot.className = 'dot' + (set.has(key) ? ' fill' : i < 30 ? '' : ' dim');
+    dot.className = 'dot'+(set.has(key)?' fill':i<30?'':' dim');
     dot.title = key;
     el.appendChild(dot);
   }
@@ -332,7 +332,7 @@ function renderActivity(){
 const SEC_MAP = {'0,0':0,'0,1':1,'0,2':2,'1,0':3,'1,2':4,'2,0':5,'2,1':6,'2,2':7};
 const CTR_TO_SEC = {0:0,1:1,2:2,3:3,5:4,6:5,7:6,8:7};
 
-function pivotName(i){ return S.outer[i][4].name || DEF[i][4] }
+function pivotName(i){ return S.outer[i][4].name || DEF[i][4]; }
 
 function buildBoard(){
   const board = document.getElementById('board');
@@ -352,18 +352,23 @@ function makeSlot(gr,gc){
   const cr=gr<3?gr:gr<7?gr-4:gr-8, cc=gc<3?gc:gc<7?gc-4:gc-8;
   const ci=cr*3+cc;
 
+  /* center section */
   if(sr===1&&sc===1){
     if(ci===4){
       div.className='cell center';
-      const n=document.createElement('div'); n.className='cn wh';
-      n.textContent=S.center.name||'Get a Life';
+      const n=document.createElement('div');
+      n.className='cn wh';
+      // center text: no italic, no line breaks forced
+      n.textContent = S.center.name || 'Get a Life';
       div.appendChild(n);
       div.onclick=()=>openThemeSheet('center');
     } else {
       const secIdx=CTR_TO_SEC[ci];
       div.className='cell theme';
-      const n=document.createElement('div'); n.className='cn gn';
-      n.textContent=pivotName(secIdx);
+      const n=document.createElement('div');
+      n.className='cn gn';
+      n.style.whiteSpace='pre-line';
+      n.textContent=formatCellName(pivotName(secIdx));
       div.appendChild(n);
       div.onclick=()=>openThemeSheet('ring',secIdx);
     }
@@ -372,21 +377,20 @@ function makeSlot(gr,gc){
 
   const secIdx=SEC_MAP[sr+','+sc];
   const isTheme=(ci===4);
-
-  const arr = view==='outer' ? S.outer : S.inner;
-  const data = arr[secIdx][ci];
-  const hasLogs = data.logs && data.logs.length>0;
-
-  // check recency (log in last 7 days)
-  const recentCutoff = Date.now()-7*24*60*60*1000;
-  const isRecent = hasLogs && data.logs.some(l=>new Date(l.date).getTime()>recentCutoff);
+  const arr=view==='outer'?S.outer:S.inner;
+  const data=arr[secIdx][ci];
+  const hasLogs=data.logs&&data.logs.length>0;
+  const recentCutoff=Date.now()-7*24*60*60*1000;
+  const isRecent=hasLogs&&data.logs.some(l=>new Date(l.date).getTime()>recentCutoff);
 
   if(isTheme){
     div.className='cell theme';
-    const n=document.createElement('div'); n.className='cn gn';
-    n.textContent=data.name||'主題';
+    const n=document.createElement('div');
+    n.className='cn gn';
+    n.style.whiteSpace='pre-line';
+    n.textContent=formatCellName(data.name||'主題');
     div.appendChild(n);
-    div.onclick=()=>openThemeSheet(view==='outer'?'outer-pivot':'inner-pivot', secIdx);
+    div.onclick=()=>openThemeSheet(view==='outer'?'outer-pivot':'inner-pivot',secIdx);
   } else {
     div.className='cell'+(isRecent?' has-recent':(!hasLogs?' empty':''));
     addContent(div,data);
@@ -400,7 +404,8 @@ function addContent(div,data){
   const hasLogs=data.logs&&data.logs.length>0;
   const n=document.createElement('div');
   n.className='cn'+(hasName?'':' ph');
-  n.textContent=hasName?data.name:'未命名';
+  n.style.whiteSpace='pre-line';
+  n.textContent=hasName?formatCellName(data.name):'未命名';
   div.appendChild(n);
   const c=document.createElement('div');
   c.className='cc'+(hasLogs?'':' no');
@@ -414,7 +419,6 @@ function openThemeSheet(kind,secIdx){
   let name='',label='';
   if(kind==='center'){ name=S.center.name; label='核心名稱'; }
   else { name=pivotName(secIdx); label='主題名稱（連動所有關聯格）'; }
-
   document.getElementById('sh-t').textContent=name||'主題';
   document.getElementById('sh-body').innerHTML=`
     <p class="theme-note">此格為主題方向，名稱連動所有關聯格子，不紀錄內容。</p>
@@ -463,8 +467,8 @@ function openLogSheet(grid,secIdx,ci){
   setTimeout(()=>document.getElementById('t-inp').focus(),250);
 }
 
-function setMood(btn, mood){
-  selectedMood = mood;
+function setMood(btn,mood){
+  selectedMood=mood;
   document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
 }
@@ -483,7 +487,7 @@ function addLog(){
   const text=document.getElementById('t-inp').value.trim();
   if(!text) return;
   if(!data.logs) data.logs=[];
-  data.logs.push({date:new Date().toISOString(), text, mood:selectedMood});
+  data.logs.push({date:new Date().toISOString(),text,mood:selectedMood});
   recordActivity();
   save(); buildBoard();
   document.getElementById('t-inp').value='';
@@ -529,6 +533,31 @@ function switchView(v){
     t.classList.toggle('on',(i===0&&v==='outer')||(i===1&&v==='inner'));
   });
   buildBoard();
+}
+
+/* ═══════════ SERVICE WORKER (離線) ═══════════ */
+if('serviceWorker' in navigator){
+  const swCode = `
+const CACHE='mandala-v1';
+const FILES=['/'];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));
+  self.skipWaiting();
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener('fetch',e=>{
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+    const clone=res.clone();
+    caches.open(CACHE).then(c=>c.put(e.request,clone));
+    return res;
+  }).catch(()=>caches.match('/'))));
+});`;
+  const blob = new Blob([swCode],{type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
 }
 
 /* ═══════════ INIT ═══════════ */
