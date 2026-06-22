@@ -3,48 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>曼陀羅人生支點</title>
+<title>人生支點</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#ede9e2;
+  --bg:#f4f1eb; /* 舒服輕盈的奶茶底色 */
   --card:#fff;
-  --card-empty:#f5f2ec;
-  --border:#d8d4cc;
-  --green:#2d6a4f;
-  --green-mid:#3d8b68;
-  --green-light:#e8f4ee;
-  --green-pale:#f0f8f4;
-  --text:#2c2a26;
-  --muted:#b8b3a8;
-  --sub:#7a9e8a;
-  --log-bg:#f7f4ef;
-  --warm:#8b5e3c;
-  --warm-light:#faf3ec;
+  --card-empty:#faf9f6;
+  --border:#e4e0d5;
+  --green:#5a7f6c; /* 溫柔舒緩的鼠尾草綠 */
+  --green-mid:#739b86;
+  --green-light:#edf2ef;
+  --green-pale:#f5f7f6;
+  --text:#3a3834; /* 降低對比度的深色 */
+  --muted:#c2bdaf;
+  --sub:#92af9f;
+  --log-bg:#faf8f5;
+  --warm:#a68060; /* 輕柔的大地暖棕 */
+  --warm-light:#fbf9f5;
+  --purple-light:#f7f4fa;
+  --purple-border:#e5def0;
+  --gold:#d49b2c; /* 溫和的柔金 */
   --fs:-apple-system,'Helvetica Neue',sans-serif;
   --ff:'Georgia','Noto Serif TC',serif;
 }
-html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x:hidden}
+html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x:hidden;color:var(--text)}
 
 /* ── topbar ── */
 #topbar{
   position:sticky;top:0;z-index:20;background:var(--bg);
-  padding:10px 14px 8px;
+  padding:12px 14px 10px;
   display:flex;align-items:center;justify-content:space-between;
   border-bottom:1px solid var(--border);
 }
-#topbar h1{font-size:15px;font-weight:600;color:var(--green);letter-spacing:.4px}
+#topbar h1{font-size:16px;font-weight:600;color:var(--green);letter-spacing:.5px}
 .tabs{display:flex;gap:6px}
-.tab{padding:5px 13px;font-size:12px;border-radius:20px;border:1px solid var(--green);background:transparent;color:var(--green);font-family:var(--fs);cursor:pointer}
+.tab{padding:6px 14px;font-size:12px;border-radius:20px;border:1px solid var(--green);background:transparent;color:var(--green);font-family:var(--fs);cursor:pointer;transition:all .2s}
 .tab.on{background:var(--green);color:#fff}
 
 /* ── daily card ── */
 #daily{
   margin:10px 10px 0;
   background:var(--warm-light);
-  border:1px solid #e8d9c8;
-  border-radius:10px;
-  padding:13px 15px 11px;
+  border:1px solid #ebdccb;
+  border-radius:12px;
+  padding:14px 16px;
 }
 .daily-label{font-size:10px;color:var(--warm);letter-spacing:.8px;font-family:var(--fs);margin-bottom:6px;font-weight:500}
 .daily-q{font-size:14px;color:var(--text);line-height:1.65;font-family:var(--ff)}
@@ -53,112 +56,137 @@ html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x
 /* ── memory card ── */
 #memory{
   margin:8px 10px 0;
-  background:#f5f0f8;
-  border:1px solid #ddd0e8;
-  border-radius:10px;
-  padding:12px 15px 10px;
+  background:var(--purple-light);
+  border:1px solid var(--purple-border);
+  border-radius:12px;
+  padding:14px 16px;
   display:none;
 }
-.mem-label{font-size:10px;color:#7a5e8a;letter-spacing:.8px;font-family:var(--fs);margin-bottom:6px;font-weight:500}
-.mem-text{font-size:13px;color:var(--text);line-height:1.65;font-family:var(--ff);font-style:italic}
-.mem-date{font-size:10px;color:#9a7eaa;margin-top:5px;font-family:var(--fs)}
+.mem-label{font-size:10px;color:#8a6fa6;letter-spacing:.8px;font-family:var(--fs);margin-bottom:6px;font-weight:500}
+.mem-text{font-size:13px;color:var(--text);line-height:1.65;font-family:var(--ff);font-style:normal}
+.mem-date{font-size:10px;color:#aa95c2;margin-top:5px;font-family:var(--fs)}
+.mem-parent-zone{margin-top:10px;border-top:1px dashed #ded6eb;padding-top:10px}
+.mem-parent-input{width:100%;padding:7px 10px;font-size:12px;border:1px solid #d4cae3;border-radius:6px;background:#fff;font-family:var(--fs)}
+.mem-parent-btn{margin-top:6px;padding:5px 10px;font-size:11px;background:#8a6fa6;color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:var(--fs)}
 
 /* ── board ── */
 #board-wrap{padding:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .board{
   display:grid;
   grid-template-columns:repeat(3,1fr) 5px repeat(3,1fr) 5px repeat(3,1fr);
-  gap:3px;width:100%;
+  gap:4px;width:100%;
 }
 .cell{
   aspect-ratio:1/1;
-  background:var(--card);border:1px solid var(--border);border-radius:5px;
+  background:var(--card);border:1px solid var(--border);border-radius:6px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:2px 1px;
+  text-align:center;padding:4px 2px;
   cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:hidden;
-  transition:border-color .15s;
+  transition:all .2s ease;
 }
-.cell:active{opacity:.8}
-.cell.empty{background:var(--card-empty);border-color:#e2ded7}
+.cell:active{opacity:.7;transform:scale(0.98)}
+.cell.empty{background:var(--card-empty);border-color:#eae6dc}
 .cell.pivot{border:2px solid var(--green)}
 .cell.theme{border:2px solid var(--green);background:var(--green-pale);cursor:default}
 .cell.center{background:var(--green);border-color:var(--green);cursor:pointer}
 .cell.gap{background:transparent;border:none;aspect-ratio:auto;padding:0;cursor:default;pointer-events:none}
-.cell.has-recent{border-color:var(--green-mid)}
+.cell.has-recent{border-color:var(--green-mid);box-shadow:inset 0 0 4px rgba(90,127,108,0.05)}
 
-/* cell name — smart line breaking for 4-char names */
+/* cell name */
 .cn{
-  font-size:8.5px;font-weight:600;color:var(--text);
-  line-height:1.25;word-break:break-all;
+  font-size:9px;font-weight:600;color:var(--text);
+  line-height:1.3;word-break:break-all;
   font-family:var(--ff);
-  /* break every 2 chars for CJK */
   overflow-wrap:break-word;
-  max-width:90%;
+  max-width:95%;
 }
-.cn.ph{color:var(--muted);font-weight:400;font-style:italic;font-size:7.5px}
-/* center big cell — no italic, slightly larger */
-.cn.wh{color:#fff;font-size:9px;line-height:1.5;font-style:normal;font-weight:600}
-.cn.gn{color:var(--green);font-size:8px;font-weight:500}
-.cc{font-size:7.5px;color:var(--sub);margin-top:1px;font-family:var(--fs)}
+.cn.ph{color:var(--muted);font-weight:400;font-style:normal;font-size:8px}
+.cn.wh{color:#fff;font-size:10px;line-height:1.5;font-style:normal;font-weight:600}
+.cn.gn{color:var(--green);font-size:8.5px;font-weight:500}
+.cc{font-size:7.5px;color:var(--sub);margin-top:2px;font-family:var(--fs)}
 .cc.no{color:var(--muted)}
+.cm-badge{font-size:7px;color:var(--warm);background:#fff4e8;padding:0px 3px;border-radius:3px;border:1px solid #ebdcc5;margin-top:2px;font-family:var(--fs)}
 
 /* ── activity strip ── */
 #activity{
-  margin:6px 10px 10px;
-  padding:10px 12px;
-  background:rgba(255,255,255,.6);
-  border-radius:8px;
+  margin:6px 10px 14px;
+  padding:12px;
+  background:rgba(255,255,255,.5);
+  border-radius:10px;
   border:1px solid var(--border);
 }
-.act-label{font-size:10px;color:var(--muted);font-family:var(--fs);margin-bottom:7px;letter-spacing:.3px}
+.act-label{font-size:10px;color:var(--muted);font-family:var(--fs);margin-bottom:8px;letter-spacing:.3px}
 .act-dots{display:flex;flex-wrap:wrap;gap:4px}
-.dot{width:10px;height:10px;border-radius:2px;background:var(--green-light);border:1px solid #c8e0d4;flex-shrink:0}
+.dot{width:10px;height:10px;border-radius:2px;background:var(--green-light);border:1px solid #d3e2db;flex-shrink:0}
 .dot.fill{background:var(--green);border-color:var(--green)}
-.dot.dim{background:#e8e3da;border-color:#ddd}
+.dot.dim{background:#eae6dc;border-color:#e0dad0}
 
 /* ── overlay / sheet ── */
-#ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;align-items:flex-end;justify-content:center}
+#ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:50;align-items:flex-end;justify-content:center}
 #ov.open{display:flex}
 #sheet{
-  background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;
-  padding:16px 16px 44px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;
+  padding:16px 16px 44px;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.05);
 }
-.handle{width:36px;height:3px;background:#ddd;border-radius:2px;margin:0 auto 14px}
+.handle{width:36px;height:4px;background:#e0dad0;border-radius:2px;margin:0 auto 14px}
 .sh-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.sh-t{font-size:14px;font-weight:600;color:var(--text);font-family:var(--ff)}
-.xbtn{background:none;border:none;font-size:22px;cursor:pointer;color:#bbb;line-height:1;padding:0 4px}
-.fl{display:block;font-size:11px;color:#999;margin-bottom:5px;font-family:var(--fs);letter-spacing:.3px}
+.sh-t{font-size:15px;font-weight:600;color:var(--text);font-family:var(--ff)}
+.xbtn{background:none;border:none;font-size:24px;cursor:pointer;color:#ccc;line-height:1;padding:0 4px}
+.fl{display:block;font-size:11px;color:#8a857c;margin-top:12px;margin-bottom:5px;font-family:var(--fs);letter-spacing:.3px;font-weight:500}
+
+/* 智慧提醒橫幅 */
+.smart-alert{background:#f6f8f6;border:1px solid #e1ebe6;padding:10px 12px;border-radius:8px;font-size:12px;color:var(--green);line-height:1.5;margin-bottom:12px;font-family:var(--fs)}
+.smart-alert.heavy{background:#fff8f5;border-color:#fcece6;color:var(--warm)}
+
 input[type=text],textarea{
-  width:100%;padding:9px 11px;font-size:14px;
-  border:1px solid #ccc;border-radius:8px;
+  width:100%;padding:10px 12px;font-size:14px;
+  border:1px solid #dedad0;border-radius:8px;
   font-family:var(--fs);color:var(--text);background:#fff;-webkit-appearance:none;
 }
-input[type=text]:focus,textarea:focus{outline:none;border-color:var(--green)}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 2px var(--green-light)}
 textarea{resize:none;line-height:1.55}
-.btn-sn{width:100%;margin:8px 0 16px;padding:9px;background:var(--green-light);color:var(--green);border:1px solid #a8d5be;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--fs)}
-.btn-add{width:100%;margin-top:9px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--fs)}
+
+.btn-sn{width:100%;margin:8px 0 12px;padding:10px;background:var(--green-light);color:var(--green);border:1px solid #cce0d6;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--fs)}
+.btn-add{width:100%;margin-top:14px;padding:12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--fs);box-shadow:0 2px 6px rgba(90,127,108,0.2)}
 .btn-add:active{opacity:.85}
-.mood-row{display:flex;gap:8px;margin-top:10px;margin-bottom:2px}
-.mood-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid #ddd;background:#fafafa;font-size:12px;color:#888;cursor:pointer;font-family:var(--fs);transition:border-color .15s,background .15s;line-height:1.3;text-align:center}
+
+/* mood controls */
+.mood-row{display:flex;gap:6px;margin-bottom:4px}
+.mood-btn{flex:1;padding:9px 4px;border-radius:8px;border:1px solid #e0dad0;background:#faf9f6;font-size:12px;color:#7a756c;cursor:pointer;font-family:var(--fs);transition:all .15s}
 .mood-btn.sel{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:500}
-.mood-hint{font-size:10px;color:var(--muted);font-family:var(--fs);margin-bottom:8px}
-.lw{margin-top:18px;border-top:1px solid #eee;padding-top:14px}
-.lhd{font-size:11px;color:#999;margin-bottom:10px;font-family:var(--fs);font-weight:500;letter-spacing:.3px}
-.le{background:var(--log-bg);border-radius:7px;padding:10px 11px;margin-bottom:8px;border:1px solid #e8e3da}
-.le-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+
+/* maslow row */
+.maslow-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.maslow-btn{padding:6px 10px;font-size:11px;border-radius:6px;border:1px solid #e0dad0;background:#fff;color:#666;cursor:pointer;font-family:var(--fs);transition:all .15s}
+.maslow-btn.sel{border-color:var(--warm);background:var(--warm-light);color:var(--warm);font-weight:600;box-shadow:0 1px 3px rgba(166,128,96,0.1)}
+
+.win-row{display:flex;align-items:center;margin:12px 0;background:var(--warm-light);padding:10px 12px;border-radius:8px;border:1px dashed #ebdccb;cursor:pointer}
+.win-row input{margin-right:8px;transform:scale(1.1)}
+.win-label{font-size:12px;color:var(--warm);font-family:var(--fs);font-weight:500}
+
+/* logs */
+.lw{margin-top:20px;border-top:1px solid #eae6dc;padding-top:14px}
+.lhd{font-size:11px;color:#8a857c;margin-bottom:10px;font-family:var(--fs);font-weight:500}
+.le{background:var(--log-bg);border-radius:8px;padding:11px 12px;margin-bottom:8px;border:1px solid #eae6dc}
+.le.is-win{border-color:rgba(212,155,44,0.4);background:#fffefb}
+.le-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
 .ld{font-size:10px;color:var(--green);font-weight:600;font-family:var(--fs)}
-.lmood{font-size:10px;color:var(--sub);font-family:var(--fs)}
-.lt{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-all;font-family:var(--fs)}
-.lx{background:none;border:none;font-size:15px;cursor:pointer;color:#ccc;padding:0;line-height:1}
+.ltags{display:flex;gap:4px;align-items:center}
+.lmood{font-size:10px;color:var(--green);font-family:var(--fs);background:#fff;padding:1px 5px;border-radius:4px;border:1px solid #e1ebe6}
+.lwin{font-size:10px;color:var(--gold);font-weight:600;border:1px solid #f5e4c4;background:#fffaf0;padding:1px 5px;border-radius:4px}
+.lt animate{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-all;font-family:var(--fs)}
+.lparent{margin-top:6px;padding-top:6px;border-top:1px dashed #eae5da;font-size:12px;color:#8a6fa6;font-style:normal}
+.lx{background:none;border:none;font-size:16px;cursor:pointer;color:#ccc;padding:0 2px}
 .lx:active{color:#e24b4a}
-.nolog{font-size:13px;color:var(--muted);font-style:italic;font-family:var(--fs)}
-.theme-note{font-size:12px;color:var(--sub);font-family:var(--fs);font-style:italic;padding:4px 0 8px;line-height:1.6}
+.nolog{font-size:13px;color:var(--muted);font-style:normal;font-family:var(--fs)}
+.theme-note{font-size:12px;color:var(--green);font-family:var(--fs);font-style:normal;padding:4px 0 8px;line-height:1.6}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>曼陀羅人生支點</h1>
+  <h1>曼陀羅人生支點 · 輕盈重塑</h1>
   <div class="tabs">
     <button class="tab on" onclick="switchView('outer')">發散</button>
     <button class="tab"    onclick="switchView('inner')">聚焦</button>
@@ -172,9 +200,13 @@ textarea{resize:none;line-height:1.55}
 </div>
 
 <div id="memory">
-  <div class="mem-label">你曾經說過 &nbsp;·&nbsp; 值得被記住</div>
+  <div class="mem-label">你曾經說過 &nbsp;·&nbsp; 值得被溫柔記住</div>
   <div class="mem-text" id="mem-text"></div>
   <div class="mem-date" id="mem-date"></div>
+  <div class="mem-parent-zone">
+    <input type="text" class="mem-parent-input" id="mem-parent-inp" placeholder="做自己的內在父母：對當時的自己說句溫柔的支持吧…">
+    <button class="mem-parent-btn" onclick="saveParentResponse()">送出慈悲對話</button>
+  </div>
 </div>
 
 <div id="board-wrap"><div class="board" id="board"></div></div>
@@ -212,7 +244,7 @@ const DEF = [
 ];
 const DEF_INNER = DEF.map(sec => sec.map((n,ci) => ci===4 ? n : ''));
 
-function mk(n){ return {name:n, logs:[]} }
+function mk(n){ return {name:n, logs:[], maslow:''} }
 
 function defaultS(){
   return {
@@ -229,6 +261,8 @@ let S = (()=>{ try{ const r=localStorage.getItem(STORE); if(r)return JSON.parse(
 let cur = null;
 let view = 'outer';
 let selectedMood = '';
+let currentMemLogRef = null;
+let currentDayMood = '普通';
 
 function save(){ try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){} }
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -236,14 +270,10 @@ function fmtDate(iso){ const d=new Date(iso); return d.getFullYear()+'/'+String(
 function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
 
-/* ── smart name display: 4 CJK chars → 2+2 lines ── */
 function formatCellName(name){
   if(!name) return '';
-  // count CJK chars
   const cjk = (name.match(/[\u3000-\u9fff\uf900-\ufaff]/g)||[]).length;
-  if(cjk === 4 && name.length === 4){
-    return name.slice(0,2) + '\n' + name.slice(2);
-  }
+  if(cjk === 4 && name.length === 4){ return name.slice(0,2) + '\n' + name.slice(2); }
   return name;
 }
 
@@ -257,7 +287,7 @@ const QUESTIONS = [
   '此刻最需要的，是休息還是前進？',
   '你現在信任自己嗎？哪個部分比較難？',
   '如果今天的你給三個月後的你一句話，會是什麼？',
-  '有沒有什麼人讓你最近感到溫暖？',
+  '有沒有什麼人讓你最近感到溫慢？',
   '你最近有沒有對自己太嚴苛了？',
   '今天有什麼小事讓你覺得還不錯？',
   '你現在最想被好好照顧的是哪個部分？',
@@ -292,15 +322,32 @@ function initMemory(){
   const all = [];
   S.outer.forEach(sec => sec.forEach(c => c.logs && c.logs.forEach(l => all.push(l))));
   S.inner.forEach(sec => sec.forEach(c => c.logs && c.logs.forEach(l => all.push(l))));
-  if(all.length < 2) return;
+  if(all.length < 2) { document.getElementById('memory').style.display = 'none'; return; }
   const cutoff = Date.now() - 3*24*60*60*1000;
   const old = all.filter(l => new Date(l.date).getTime() < cutoff);
-  if(!old.length) return;
+  if(!old.length) { document.getElementById('memory').style.display = 'none'; return; }
+  
   const pick = old[Math.floor(Math.random() * old.length)];
-  const preview = pick.text.length > 60 ? pick.text.slice(0,60)+'…' : pick.text;
-  document.getElementById('mem-text').textContent = '「' + preview + '」';
+  currentMemLogRef = pick;
+  
+  const moodString = pick.mood ? ` (${pick.mood})` : '';
+  const preview = pick.text.length > 70 ? pick.text.slice(0,70)+'…' : pick.text;
+  document.getElementById('mem-text').textContent = '「' + preview + '」' + moodString;
   document.getElementById('mem-date').textContent = fmtDate(pick.date) + ' 的你說的';
+  document.getElementById('mem-parent-inp').value = pick.parentResponse || '';
   document.getElementById('memory').style.display = 'block';
+}
+
+function saveParentResponse(){
+  if(!currentMemLogRef) return;
+  currentMemLogRef.parentResponse = document.getElementById('mem-parent-inp').value.trim();
+  save();
+  alert('溫柔的話語已寫入記憶迴路');
+  initMemory();
+  if(cur && !cur.isTheme) {
+    const data = cur.grid==='outer'?S.outer[cur.secIdx][cur.ci]:S.inner[cur.secIdx][cur.ci];
+    renderLogs(data.logs || []);
+  }
 }
 
 /* ═══════════ ACTIVITY ═══════════ */
@@ -352,13 +399,11 @@ function makeSlot(gr,gc){
   const cr=gr<3?gr:gr<7?gr-4:gr-8, cc=gc<3?gc:gc<7?gc-4:gc-8;
   const ci=cr*3+cc;
 
-  /* center section */
   if(sr===1&&sc===1){
     if(ci===4){
       div.className='cell center';
       const n=document.createElement('div');
       n.className='cn wh';
-      // center text: no italic, no line breaks forced
       n.textContent = S.center.name || 'Get a Life';
       div.appendChild(n);
       div.onclick=()=>openThemeSheet('center');
@@ -392,6 +437,7 @@ function makeSlot(gr,gc){
     div.appendChild(n);
     div.onclick=()=>openThemeSheet(view==='outer'?'outer-pivot':'inner-pivot',secIdx);
   } else {
+    // 保持原本純淨乾淨的 cell 外觀，不因馬斯洛而變換大格子顏色
     div.className='cell'+(isRecent?' has-recent':(!hasLogs?' empty':''));
     addContent(div,data);
     div.onclick=()=>openLogSheet(view,secIdx,ci);
@@ -402,14 +448,31 @@ function makeSlot(gr,gc){
 function addContent(div,data){
   const hasName=data.name&&data.name.trim();
   const hasLogs=data.logs&&data.logs.length>0;
+  
   const n=document.createElement('div');
   n.className='cn'+(hasName?'':' ph');
   n.style.whiteSpace='pre-line';
-  n.textContent=hasName?formatCellName(data.name):'未命名';
+  n.textContent=hasName?formatCellName(data.name):'待定義';
   div.appendChild(n);
+  
+  if(data.maslow) {
+    const mb = document.createElement('div');
+    mb.className = 'cm-badge'; // 小貼紙標籤維持單一乾淨的大地暖棕色
+    mb.textContent = data.maslow;
+    div.appendChild(mb);
+  }
+
   const c=document.createElement('div');
   c.className='cc'+(hasLogs?'':' no');
-  c.textContent=hasLogs?data.logs.length+'則':'尚無';
+  const winCount = hasLogs ? data.logs.filter(l => l.isWin).length : 0;
+  const winText = winCount > 0 ? ` 已重塑 ${winCount}` : '';
+  
+  if(!hasLogs) {
+    c.textContent = hasName ? '待紀錄' : '待定義';
+  } else {
+    c.textContent = data.logs.length+'則'+winText;
+  }
+  
   div.appendChild(c);
 }
 
@@ -421,7 +484,7 @@ function openThemeSheet(kind,secIdx){
   else { name=pivotName(secIdx); label='主題名稱（連動所有關聯格）'; }
   document.getElementById('sh-t').textContent=name||'主題';
   document.getElementById('sh-body').innerHTML=`
-    <p class="theme-note">此格為主題方向，名稱連動所有關聯格子，不紀錄內容。</p>
+    <p class="theme-note">此格為核心主題方向，連動所有關聯格子，不單獨紀錄內容。</p>
     <label class="fl">${label}</label>
     <input type="text" id="n-inp" maxlength="12" placeholder="輸入名稱…" value="${esc(name)}">
     <button class="btn-sn" onclick="saveThemeName()">儲存名稱</button>
@@ -438,25 +501,69 @@ function saveThemeName(){
   document.getElementById('sh-t').textContent=val||'主題';
 }
 
+const MASLOW_MAP = {
+  'L1': 'L1 生理需求 (睡眠/飲食/喝水/健康)',
+  'L2': 'L2 安全需求 (預備金/保險/界線/沉澱)',
+  'L3': 'L3 愛與歸屬 (人際/老友/家庭/伴侶)',
+  'L4': 'L4 尊嚴需求 (工作/股票/作品集/成就感)',
+  'L5': 'L5 自我實現 (學習/夢想/滑雪/慢活)'
+};
+
 function openLogSheet(grid,secIdx,ci){
   cur={isTheme:false,grid,secIdx,ci};
-  selectedMood='';
+  selectedMood=currentDayMood;
   const data=grid==='outer'?S.outer[secIdx][ci]:S.inner[secIdx][ci];
-  document.getElementById('sh-t').textContent=data.name||'格子';
+  document.getElementById('sh-t').textContent=data.name||'待定義格子';
+  
+  let maslowButtons = Object.keys(MASLOW_MAP).map(k => {
+    const sel = data.maslow === k ? 'sel' : '';
+    return `<button class="maslow-btn ${sel}" onclick="saveGridMaslow(this, '${k}')">${k}</button>`;
+  }).join('');
+
+  let smartAlertHtml = '';
+  if(data.maslow) {
+    if(currentDayMood === '很沉' && (data.maslow === 'L4' || data.maslow === 'L5')) {
+      smartAlertHtml = `<div class="smart-alert heavy">💡 <b>智慧重塑提醒：</b>目前你感覺「很沉」，而這格屬於高層次需求 (${data.maslow})。請溫柔對待，此時不強求前進，寫下當下的抗拒或放空也是很棒的紀錄。</div>`;
+    } else if(currentDayMood === '還不錯' || currentDayMood === '輕一點') {
+      smartAlertHtml = `<div class="smart-alert">💡 <b>智慧重塑提醒：</b>現在能量狀態「${currentDayMood}」，很適合為這個 <b>${data.maslow}</b> 主題注入一些主動的探索或小前進喔！</div>`;
+    } else if(data.maslow === 'L1' || data.maslow === 'L2') {
+      smartAlertHtml = `<div class="smart-alert">💡 <b>智慧重塑提醒：</b>這格屬於底層核心支點 (${data.maslow})。重養自己的關鍵是先把這裡填穩。不論感覺如何，好好記錄它的狀態。</div>`;
+    }
+  } else {
+    smartAlertHtml = `<div class="smart-alert">💡 <b>小提示：</b>可以在下方為這個格子設定「馬斯洛層次」，未來點開時將會獲得個人化的次序提醒。</div>`;
+  }
+
   document.getElementById('sh-body').innerHTML=`
-    <label class="fl">格子名稱</label>
+    <div id="smart-alert-container">${smartAlertHtml}</div>
+
+    <label class="fl">格子主題名稱</label>
     <input type="text" id="n-inp" maxlength="14" placeholder="輸入名稱…" value="${esc(data.name||'')}">
     <button class="btn-sn" onclick="saveLogName()">儲存名稱</button>
-    <label class="fl">記錄當下想法</label>
-    <textarea id="t-inp" rows="4" placeholder="此刻的想法、感受、目標…\n不需要完整，只需要真實"></textarea>
-    <div class="mood-hint">現在身體的感覺</div>
-    <div class="mood-row">
-      <button class="mood-btn" onclick="setMood(this,'很沉')">很沉</button>
-      <button class="mood-btn" onclick="setMood(this,'普通')">普通</button>
-      <button class="mood-btn" onclick="setMood(this,'輕一點')">輕一點</button>
-      <button class="mood-btn" onclick="setMood(this,'還不錯')">還不錯</button>
+    
+    <label class="fl">定義此格的人生需求層次 (整個主題屬性)</label>
+    <div class="maslow-row">${maslowButtons}</div>
+    <div style="font-size:10px; color:var(--warm); margin-bottom:12px; font-family:var(--fs);" id="maslow-desc">
+      ${data.maslow ? MASLOW_MAP[data.maslow] : '尚未設定層次'}
     </div>
+
+    <label class="fl">現在身體感覺如何？(影響今日決策權重)</label>
+    <div class="mood-row">
+      <button class="mood-btn ${selectedMood==='很沉'?'sel':''}" onclick="updateDialogMood(this,'很沉')">很沉</button>
+      <button class="mood-btn ${selectedMood==='普通'?'sel':''}" onclick="updateDialogMood(this,'普通')">普通</button>
+      <button class="mood-btn ${selectedMood==='輕一點'?'sel':''}" onclick="updateDialogMood(this,'輕一點')">輕一點</button>
+      <button class="mood-btn ${selectedMood==='還不錯'?'sel':''}" onclick="updateDialogMood(this,'還不錯')">還不錯</button>
+    </div>
+
+    <label class="fl">寫下當下的真實紀錄</label>
+    <textarea id="t-inp" rows="4" placeholder="不需要完整，只需要真實。寫下想法、阻礙、或是此刻的現狀…"></textarea>
+    
+    <div class="win-row" onclick="toggleWinCheckbox()">
+      <input type="checkbox" id="win-cb" onclick="event.stopPropagation()">
+      <span class="win-label">[ 慈悲自我 ] 這是一件讓我感到放鬆、被照顧或驕傲的微小勝利 (多巴胺重塑)</span>
+    </div>
+
     <button class="btn-add" onclick="addLog()">新增紀錄</button>
+    
     <div class="lw">
       <div class="lhd">過去紀錄</div>
       <div id="log-list"></div>
@@ -467,10 +574,54 @@ function openLogSheet(grid,secIdx,ci){
   setTimeout(()=>document.getElementById('t-inp').focus(),250);
 }
 
-function setMood(btn,mood){
-  selectedMood=mood;
+function saveGridMaslow(btn, lv) {
+  if(!cur||cur.isTheme) return;
+  const data=cur.grid==='outer'?S.outer[cur.secIdx][cur.ci]:S.inner[cur.secIdx][cur.ci];
+  
+  if(data.maslow === lv) {
+    data.maslow = '';
+    btn.classList.remove('sel');
+  } else {
+    data.maslow = lv;
+    document.querySelectorAll('.maslow-btn').forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+  }
+  
+  document.getElementById('maslow-desc').textContent = data.maslow ? MASLOW_MAP[data.maslow] : '尚未設定層次';
+  save(); buildBoard();
+  updateSmartAlert(data.maslow);
+}
+
+function updateDialogMood(btn, mood) {
+  currentDayMood = mood;
+  selectedMood = mood;
   document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
+  
+  if(!cur||cur.isTheme) return;
+  const data=cur.grid==='outer'?S.outer[cur.secIdx][cur.ci]:S.inner[cur.secIdx][cur.ci];
+  updateSmartAlert(data.maslow);
+}
+
+function updateSmartAlert(maslow) {
+  const container = document.getElementById('smart-alert-container');
+  if(!container) return;
+  if(maslow) {
+    if(currentDayMood === '很沉' && (maslow === 'L4' || maslow === 'L5')) {
+      container.innerHTML = `<div class="smart-alert heavy">💡 <b>智慧重塑提醒：</b>目前你感覺「很沉」，而這格屬於高層次需求 (${maslow})。請溫柔對待，此時不強求前進，寫下當下的抗拒或放空也是很棒的紀錄。</div>`;
+    } else if(currentDayMood === '還不錯' || currentDayMood === '輕一點') {
+      container.innerHTML = `<div class="smart-alert">💡 <b>智慧重塑提醒：</b>現在能量狀態「${currentDayMood}」，很適合為這個 <b>${maslow}</b> 主題注入一些主動的探索或小前進喔！</div>`;
+    } else {
+      container.innerHTML = `<div class="smart-alert">💡 <b>智慧重塑提醒：</b>這格屬於底層核心支點 (${maslow})。重養自己的關鍵是先把這裡填穩。不論感覺如何，好好記錄它的狀態。</div>`;
+    }
+  } else {
+    container.innerHTML = `<div class="smart-alert">💡 <b>小提示：</b>可以在下方為這個格子設定「馬斯洛層次」，未來點開時將會獲得個人化的次序提醒。</div>`;
+  }
+}
+
+function toggleWinCheckbox(){
+  const cb = document.getElementById('win-cb');
+  if(cb) cb.checked = !cb.checked;
 }
 
 function saveLogName(){
@@ -487,12 +638,23 @@ function addLog(){
   const text=document.getElementById('t-inp').value.trim();
   if(!text) return;
   if(!data.logs) data.logs=[];
-  data.logs.push({date:new Date().toISOString(),text,mood:selectedMood});
+  
+  const isWin = document.getElementById('win-cb').checked;
+
+  data.logs.push({
+    date:new Date().toISOString(),
+    text,
+    mood:selectedMood,
+    isWin:isWin,
+    parentResponse:''
+  });
+  
   recordActivity();
   save(); buildBoard();
+  
   document.getElementById('t-inp').value='';
-  selectedMood='';
-  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('win-cb').checked = false;
+  
   renderLogs(data.logs);
   renderActivity();
   initMemory();
@@ -505,13 +667,17 @@ function renderLogs(logs){
   el.innerHTML=[...logs].reverse().map((l,ri)=>{
     const realIdx=logs.length-1-ri;
     const moodTag=l.mood?`<span class="lmood">${l.mood}</span>`:'';
-    return `<div class="le">
+    const winTag=l.isWin?`<span class="lwin">微小勝利</span>`:'';
+    const parentBox=l.parentResponse?`<div class="lparent">內在父母：「${escHtml(l.parentResponse)}」</div>`:'';
+    
+    return `<div class="le ${l.isWin?'is-win':''}">
       <div class="le-top">
         <span class="ld">${fmtDate(l.date)}</span>
-        ${moodTag}
+        <div class="ltags">${winTag}${moodTag}</div>
         <button class="lx" onclick="delLog(${realIdx})">×</button>
       </div>
       <div class="lt">${escHtml(l.text)}</div>
+      ${parentBox}
     </div>`;
   }).join('');
 }
@@ -522,6 +688,7 @@ function delLog(idx){
   if(!confirm('確定刪除這筆紀錄？')) return;
   data.logs.splice(idx,1);
   save(); buildBoard(); renderLogs(data.logs);
+  initMemory();
 }
 
 function closeSheet(){ document.getElementById('ov').classList.remove('open'); cur=null; }
@@ -535,7 +702,7 @@ function switchView(v){
   buildBoard();
 }
 
-/* ═══════════ SERVICE WORKER (離線) ═══════════ */
+/* ═══════════ SERVICE WORKER ═══════════ */
 if('serviceWorker' in navigator){
   const swCode = `
 const CACHE='mandala-v1';
