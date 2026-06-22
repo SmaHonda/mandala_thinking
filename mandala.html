@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>曼陀羅人生支點</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ede9e2;
+  --card:#fff;
+  --card-empty:#f5f2ec;
+  --border:#d8d4cc;
+  --green:#2d6a4f;
+  --green-mid:#3d8b68;
+  --green-light:#e8f4ee;
+  --green-pale:#f0f8f4;
+  --text:#2c2a26;
+  --muted:#b8b3a8;
+  --sub:#7a9e8a;
+  --log-bg:#f7f4ef;
+  --warm:#8b5e3c;
+  --warm-light:#faf3ec;
+  --fs:-apple-system,'Helvetica Neue',sans-serif;
+  --ff:'Georgia','Noto Serif TC',serif;
+}
+html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x:hidden}
+
+/* ── topbar ── */
+#topbar{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  padding:10px 14px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+#topbar h1{font-size:15px;font-weight:600;color:var(--green);letter-spacing:.4px}
+.tabs{display:flex;gap:6px}
+.tab{padding:5px 13px;font-size:12px;border-radius:20px;border:1px solid var(--green);background:transparent;color:var(--green);font-family:var(--fs);cursor:pointer}
+.tab.on{background:var(--green);color:#fff}
+
+/* ── daily card ── */
+#daily{
+  margin:10px 10px 0;
+  background:var(--warm-light);
+  border:1px solid #e8d9c8;
+  border-radius:10px;
+  padding:13px 15px 11px;
+}
+.daily-label{font-size:10px;color:var(--warm);letter-spacing:.8px;font-family:var(--fs);margin-bottom:6px;font-weight:500}
+.daily-q{font-size:14px;color:var(--text);line-height:1.65;font-family:var(--ff)}
+.daily-skip{display:block;margin-top:8px;font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--fs);padding:0;text-decoration:underline;text-underline-offset:3px}
+
+/* ── memory card ── */
+#memory{
+  margin:8px 10px 0;
+  background:#f5f0f8;
+  border:1px solid #ddd0e8;
+  border-radius:10px;
+  padding:12px 15px 10px;
+  display:none;
+}
+.mem-label{font-size:10px;color:#7a5e8a;letter-spacing:.8px;font-family:var(--fs);margin-bottom:6px;font-weight:500}
+.mem-text{font-size:13px;color:var(--text);line-height:1.65;font-family:var(--ff);font-style:italic}
+.mem-date{font-size:10px;color:#9a7eaa;margin-top:5px;font-family:var(--fs)}
+
+/* ── board ── */
+#board-wrap{padding:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.board{
+  display:grid;
+  grid-template-columns:repeat(3,1fr) 5px repeat(3,1fr) 5px repeat(3,1fr);
+  gap:3px;width:100%;
+}
+.cell{
+  aspect-ratio:1/1;background:var(--card);border:1px solid var(--border);border-radius:5px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:3px 2px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:hidden;
+  transition:border-color .15s;
+}
+.cell:active{opacity:.8}
+.cell.empty{background:var(--card-empty);border-color:#e2ded7}
+.cell.pivot{border:2px solid var(--green)}
+.cell.theme{border:2px solid var(--green);background:var(--green-pale);cursor:default}
+.cell.center{background:var(--green);border-color:var(--green);cursor:pointer}
+.cell.gap{background:transparent;border:none;aspect-ratio:auto;padding:0;cursor:default;pointer-events:none}
+.cell.has-recent{border-color:var(--green-mid)}
+
+.cn{font-size:9.5px;font-weight:600;color:var(--text);line-height:1.25;word-break:break-all;font-family:var(--ff)}
+.cn.ph{color:var(--muted);font-weight:400;font-style:italic}
+.cn.wh{color:#fff;font-size:10px;line-height:1.6;font-style:italic}
+.cn.gn{color:var(--green);font-size:9px;font-weight:500}
+.cc{font-size:8px;color:var(--sub);margin-top:2px;font-family:var(--fs)}
+.cc.no{color:var(--muted)}
+
+/* ── activity strip ── */
+#activity{
+  margin:6px 10px 10px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.6);
+  border-radius:8px;
+  border:1px solid var(--border);
+}
+.act-label{font-size:10px;color:var(--muted);font-family:var(--fs);margin-bottom:7px;letter-spacing:.3px}
+.act-dots{display:flex;flex-wrap:wrap;gap:4px}
+.dot{
+  width:10px;height:10px;border-radius:2px;
+  background:var(--green-light);border:1px solid #c8e0d4;
+  flex-shrink:0;
+}
+.dot.fill{background:var(--green);border-color:var(--green)}
+.dot.dim{background:#e8e3da;border-color:#ddd}
+
+/* ── overlay ── */
+#ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;align-items:flex-end;justify-content:center}
+#ov.open{display:flex}
+#sheet{
+  background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;
+  padding:16px 16px 44px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.handle{width:36px;height:3px;background:#ddd;border-radius:2px;margin:0 auto 14px}
+.sh-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sh-t{font-size:14px;font-weight:600;color:var(--text);font-family:var(--ff)}
+.xbtn{background:none;border:none;font-size:22px;cursor:pointer;color:#bbb;line-height:1;padding:0 4px}
+.fl{display:block;font-size:11px;color:#999;margin-bottom:5px;font-family:var(--fs);letter-spacing:.3px}
+input[type=text],textarea{
+  width:100%;padding:9px 11px;font-size:14px;
+  border:1px solid #ccc;border-radius:8px;
+  font-family:var(--fs);color:var(--text);background:#fff;-webkit-appearance:none;
+}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--green)}
+textarea{resize:none;line-height:1.55}
+.btn-sn{width:100%;margin:8px 0 16px;padding:9px;background:var(--green-light);color:var(--green);border:1px solid #a8d5be;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--fs)}
+.btn-add{width:100%;margin-top:9px;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--fs)}
+.btn-add:active{opacity:.85}
+
+/* mood row */
+.mood-row{display:flex;gap:8px;margin-top:10px;margin-bottom:2px}
+.mood-btn{
+  flex:1;padding:8px 4px;border-radius:8px;border:1px solid #ddd;
+  background:#fafafa;font-size:12px;color:#888;cursor:pointer;font-family:var(--fs);
+  transition:border-color .15s,background .15s;line-height:1.3;text-align:center;
+}
+.mood-btn.sel{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:500}
+.mood-hint{font-size:10px;color:var(--muted);font-family:var(--fs);margin-bottom:8px}
+
+/* logs */
+.lw{margin-top:18px;border-top:1px solid #eee;padding-top:14px}
+.lhd{font-size:11px;color:#999;margin-bottom:10px;font-family:var(--fs);font-weight:500;letter-spacing:.3px}
+.le{background:var(--log-bg);border-radius:7px;padding:10px 11px;margin-bottom:8px;border:1px solid #e8e3da}
+.le-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.ld{font-size:10px;color:var(--green);font-weight:600;font-family:var(--fs)}
+.lmood{font-size:10px;color:var(--sub);font-family:var(--fs)}
+.lt{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-all;font-family:var(--fs)}
+.lx{background:none;border:none;font-size:15px;cursor:pointer;color:#ccc;padding:0;line-height:1}
+.lx:active{color:#e24b4a}
+.nolog{font-size:13px;color:var(--muted);font-style:italic;font-family:var(--fs)}
+.theme-note{font-size:12px;color:var(--sub);font-family:var(--fs);font-style:italic;padding:4px 0 8px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>曼陀羅人生支點</h1>
+  <div class="tabs">
+    <button class="tab on" onclick="switchView('outer')">外層</button>
+    <button class="tab"    onclick="switchView('inner')">中心</button>
+  </div>
+</div>
+
+<div id="daily">
+  <div class="daily-label">TODAY &nbsp;·&nbsp; 今日一問</div>
+  <div class="daily-q" id="daily-q">正在準備今天的問題…</div>
+  <button class="daily-skip" onclick="nextQ()">換一個問題</button>
+</div>
+
+<div id="memory">
+  <div class="mem-label">你曾經說過 &nbsp;·&nbsp; 值得被記住</div>
+  <div class="mem-text" id="mem-text"></div>
+  <div class="mem-date" id="mem-date"></div>
+</div>
+
+<div id="board-wrap"><div class="board" id="board"></div></div>
+
+<div id="activity">
+  <div class="act-label">你來過的日子</div>
+  <div class="act-dots" id="act-dots"></div>
+</div>
+
+<div id="ov" onclick="ovClick(event)">
+  <div id="sheet">
+    <div class="handle"></div>
+    <div class="sh-hd">
+      <span class="sh-t" id="sh-t">格子</span>
+      <button class="xbtn" onclick="closeSheet()">×</button>
+    </div>
+    <div id="sh-body"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════ STORE ═══════════ */
+const STORE = 'mandala_v6';
+const GAP = new Set([3,7]);
+
+const DEF = [
+  ['記帳','儲蓄','訂閱檢視','財富','經濟','緊急預備金','報稅','夢想基金','保險'],
+  ['安靜時間','感恩','小組','讀經','信仰','禱告','服事','反省','盼望'],
+  ['運動','睡眠','飲食','喝水','健康','伸展','體檢','牙齒','心理'],
+  ['接案','AI 協作','學新工具','休息界線','工作事業','提案','作品集','客戶關係','報價'],
+  ['老友','主動約','室友','教會朋友','人際','同行夥伴','久沒聯絡的','一對一','傾聽'],
+  ['登山','閱讀','煮食','攝影','嗜好','手寫','植物','黑膠','小誌'],
+  ['去冰島','養一隻狗','一間小屋','開一間店','夢想','學一種樂器','不為明天憂慮','寫一本書','慢活'],
+  ['爸媽','預備自己','未來的家','手足','家庭伴侶','陪伴','表達愛','衝突修復','一起禱告'],
+];
+const DEF_INNER = DEF.map(sec => sec.map((n,ci) => ci===4 ? n : ''));
+
+function mk(n){ return {name:n, logs:[]} }
+
+function defaultS(){
+  return {
+    outer: DEF.map(sec => sec.map(n => mk(n))),
+    inner: DEF_INNER.map(sec => sec.map(n => mk(n))),
+    center: mk('Get\na\nLife'),
+    activity: [],   // ISO date strings (YYYY-MM-DD)
+    dailyIdx: 0,
+    dailyDate: ''
+  };
+}
+
+let S = (()=>{ try{ const r=localStorage.getItem(STORE); if(r)return JSON.parse(r); }catch(e){} return defaultS(); })();
+let cur = null;
+let view = 'outer';
+let selectedMood = '';
+
+function save(){ try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){} }
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fmtDate(iso){ const d=new Date(iso); return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0'); }
+function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+
+/* ═══════════ DAILY QUESTIONS ═══════════ */
+const QUESTIONS = [
+  '今天醒來，身體感覺怎麼樣？',
+  '現在最佔據你心思的是什麼？',
+  '最近有沒有哪一刻，讓你覺得「這樣就好」？',
+  '你今天對自己做了什麼好的事？',
+  '有沒有什麼事情，你一直想做但還沒開始？',
+  '此刻最需要的，是休息還是前進？',
+  '你現在信任自己嗎？哪個部分比較難？',
+  '如果今天的你給三個月後的你一句話，會是什麼？',
+  '有沒有什麼人讓你最近感到溫暖？',
+  '你最近有沒有對自己太嚴苛了？',
+  '今天有什麼小事讓你覺得還不錯？',
+  '你現在最想被好好照顧的是哪個部分？',
+  '此刻坐在這裡，你感覺安全嗎？',
+  '有什麼是你早就知道，但還沒準備好面對的？',
+  '你最近有沒有做到一件讓自己驕傲的小事？',
+  '如果你的身體可以說話，它現在會說什麼？',
+  '你現在最需要聽到的一句話是什麼？',
+  '有沒有什麼習慣，是你想重新撿回來的？',
+  '你覺得自己現在在照顧自己嗎？',
+  '今天結束之前，你想對自己說什麼？',
+];
+
+function initDaily(){
+  const today = todayStr();
+  if(S.dailyDate !== today){
+    S.dailyDate = today;
+    S.dailyIdx = (S.dailyIdx + 1) % QUESTIONS.length;
+    save();
+  }
+  document.getElementById('daily-q').textContent = QUESTIONS[S.dailyIdx];
+}
+
+function nextQ(){
+  S.dailyIdx = (S.dailyIdx + 1) % QUESTIONS.length;
+  save();
+  document.getElementById('daily-q').textContent = QUESTIONS[S.dailyIdx];
+}
+
+/* ═══════════ MEMORY ═══════════ */
+function initMemory(){
+  // collect all logs with text
+  const all = [];
+  S.outer.forEach(sec => sec.forEach(c => c.logs && c.logs.forEach(l => all.push(l))));
+  S.inner.forEach(sec => sec.forEach(c => c.logs && c.logs.forEach(l => all.push(l))));
+
+  if(all.length < 2) return; // need at least 2 entries before showing memories
+
+  // pick a log from at least 3 days ago
+  const cutoff = Date.now() - 3*24*60*60*1000;
+  const old = all.filter(l => new Date(l.date).getTime() < cutoff);
+  if(!old.length) return;
+
+  const pick = old[Math.floor(Math.random() * old.length)];
+  const preview = pick.text.length > 60 ? pick.text.slice(0,60)+'…' : pick.text;
+  document.getElementById('mem-text').textContent = '「' + preview + '」';
+  document.getElementById('mem-date').textContent = fmtDate(pick.date) + ' 的你說的';
+  document.getElementById('memory').style.display = 'block';
+}
+
+/* ═══════════ ACTIVITY ═══════════ */
+function recordActivity(){
+  const today = todayStr();
+  if(!S.activity) S.activity = [];
+  if(!S.activity.includes(today)){
+    S.activity.push(today);
+    save();
+  }
+}
+
+function renderActivity(){
+  recordActivity();
+  const el = document.getElementById('act-dots');
+  el.innerHTML = '';
+  // show last 60 days
+  const days = 60;
+  const today = new Date();
+  const set = new Set(S.activity || []);
+  for(let i = days-1; i >= 0; i--){
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (set.has(key) ? ' fill' : i < 30 ? '' : ' dim');
+    dot.title = key;
+    el.appendChild(dot);
+  }
+}
+
+/* ═══════════ BOARD ═══════════ */
+const SEC_MAP = {'0,0':0,'0,1':1,'0,2':2,'1,0':3,'1,2':4,'2,0':5,'2,1':6,'2,2':7};
+const CTR_TO_SEC = {0:0,1:1,2:2,3:3,5:4,6:5,7:6,8:7};
+
+function pivotName(i){ return S.outer[i][4].name || DEF[i][4] }
+
+function buildBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  for(let gr=0;gr<11;gr++){
+    for(let gc=0;gc<11;gc++){
+      board.appendChild(makeSlot(gr,gc));
+    }
+  }
+}
+
+function makeSlot(gr,gc){
+  const div = document.createElement('div');
+  if(GAP.has(gr)||GAP.has(gc)){ div.className='cell gap'; return div; }
+
+  const sr=gr<3?0:gr<7?1:2, sc=gc<3?0:gc<7?1:2;
+  const cr=gr<3?gr:gr<7?gr-4:gr-8, cc=gc<3?gc:gc<7?gc-4:gc-8;
+  const ci=cr*3+cc;
+
+  if(sr===1&&sc===1){
+    if(ci===4){
+      div.className='cell center';
+      const n=document.createElement('div'); n.className='cn wh';
+      n.textContent=S.center.name||'Get a Life';
+      div.appendChild(n);
+      div.onclick=()=>openThemeSheet('center');
+    } else {
+      const secIdx=CTR_TO_SEC[ci];
+      div.className='cell theme';
+      const n=document.createElement('div'); n.className='cn gn';
+      n.textContent=pivotName(secIdx);
+      div.appendChild(n);
+      div.onclick=()=>openThemeSheet('ring',secIdx);
+    }
+    return div;
+  }
+
+  const secIdx=SEC_MAP[sr+','+sc];
+  const isTheme=(ci===4);
+
+  const arr = view==='outer' ? S.outer : S.inner;
+  const data = arr[secIdx][ci];
+  const hasLogs = data.logs && data.logs.length>0;
+
+  // check recency (log in last 7 days)
+  const recentCutoff = Date.now()-7*24*60*60*1000;
+  const isRecent = hasLogs && data.logs.some(l=>new Date(l.date).getTime()>recentCutoff);
+
+  if(isTheme){
+    div.className='cell theme';
+    const n=document.createElement('div'); n.className='cn gn';
+    n.textContent=data.name||'主題';
+    div.appendChild(n);
+    div.onclick=()=>openThemeSheet(view==='outer'?'outer-pivot':'inner-pivot', secIdx);
+  } else {
+    div.className='cell'+(isRecent?' has-recent':(!hasLogs?' empty':''));
+    addContent(div,data);
+    div.onclick=()=>openLogSheet(view,secIdx,ci);
+  }
+  return div;
+}
+
+function addContent(div,data){
+  const hasName=data.name&&data.name.trim();
+  const hasLogs=data.logs&&data.logs.length>0;
+  const n=document.createElement('div');
+  n.className='cn'+(hasName?'':' ph');
+  n.textContent=hasName?data.name:'未命名';
+  div.appendChild(n);
+  const c=document.createElement('div');
+  c.className='cc'+(hasLogs?'':' no');
+  c.textContent=hasLogs?data.logs.length+'則':'尚無';
+  div.appendChild(c);
+}
+
+/* ═══════════ SHEETS ═══════════ */
+function openThemeSheet(kind,secIdx){
+  cur={isTheme:true,kind,secIdx};
+  let name='',label='';
+  if(kind==='center'){ name=S.center.name; label='核心名稱'; }
+  else { name=pivotName(secIdx); label='主題名稱（連動所有關聯格）'; }
+
+  document.getElementById('sh-t').textContent=name||'主題';
+  document.getElementById('sh-body').innerHTML=`
+    <p class="theme-note">此格為主題方向，名稱連動所有關聯格子，不紀錄內容。</p>
+    <label class="fl">${label}</label>
+    <input type="text" id="n-inp" maxlength="12" placeholder="輸入名稱…" value="${esc(name)}">
+    <button class="btn-sn" onclick="saveThemeName()">儲存名稱</button>
+  `;
+  document.getElementById('ov').classList.add('open');
+}
+
+function saveThemeName(){
+  if(!cur||!cur.isTheme) return;
+  const val=document.getElementById('n-inp').value.trim();
+  if(cur.kind==='center'){ S.center.name=val; }
+  else { S.outer[cur.secIdx][4].name=val; S.inner[cur.secIdx][4].name=val; }
+  save(); buildBoard();
+  document.getElementById('sh-t').textContent=val||'主題';
+}
+
+function openLogSheet(grid,secIdx,ci){
+  cur={isTheme:false,grid,secIdx,ci};
+  selectedMood='';
+  const data=grid==='outer'?S.outer[secIdx][ci]:S.inner[secIdx][ci];
+  document.getElementById('sh-t').textContent=data.name||'格子';
+  document.getElementById('sh-body').innerHTML=`
+    <label class="fl">格子名稱</label>
+    <input type="text" id="n-inp" maxlength="14" placeholder="輸入名稱…" value="${esc(data.name||'')}">
+    <button class="btn-sn" onclick="saveLogName()">儲存名稱</button>
+    <label class="fl">記錄當下想法</label>
+    <textarea id="t-inp" rows="4" placeholder="此刻的想法、感受、目標…\n不需要完整，只需要真實"></textarea>
+    <div class="mood-hint">現在身體的感覺</div>
+    <div class="mood-row">
+      <button class="mood-btn" onclick="setMood(this,'很沉')">很沉</button>
+      <button class="mood-btn" onclick="setMood(this,'普通')">普通</button>
+      <button class="mood-btn" onclick="setMood(this,'輕一點')">輕一點</button>
+      <button class="mood-btn" onclick="setMood(this,'還不錯')">還不錯</button>
+    </div>
+    <button class="btn-add" onclick="addLog()">新增紀錄</button>
+    <div class="lw">
+      <div class="lhd">過去紀錄</div>
+      <div id="log-list"></div>
+    </div>
+  `;
+  renderLogs(data.logs||[]);
+  document.getElementById('ov').classList.add('open');
+  setTimeout(()=>document.getElementById('t-inp').focus(),250);
+}
+
+function setMood(btn, mood){
+  selectedMood = mood;
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function saveLogName(){
+  if(!cur||cur.isTheme) return;
+  const data=cur.grid==='outer'?S.outer[cur.secIdx][cur.ci]:S.inner[cur.secIdx][cur.ci];
+  data.name=document.getElementById('n-inp').value.trim();
+  save(); buildBoard();
+  document.getElementById('sh-t').textContent=data.name||'格子';
+}
+
+function addLog(){
+  if(!cur||cur.isTheme) return;
+  const data=cur.grid==='outer'?S.outer[cur.secIdx][cur.ci]:S.inner[cur.secIdx][cur.ci];
+  const text=document.getElementById('t-inp').value.trim();
+  if(!text) return;
+  if(!data.logs) data.logs=[];
+  data.logs.push({date:new Date().toISOString(), text, mood:selectedMood});
+  recordActivity();
+  save(); buildBoard();
+  document.getElementById('t-inp').value='';
+  selectedMood='';
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
+  renderLogs(data.logs);
+  renderActivity();
+  initMemory();
+}
+
+function renderLogs(logs){
+  const el=document.getElementById('log-list');
+  if(!el) return;
+  if(!logs||!logs.length){ el.innerHTML='<div class="nolog">還沒有紀錄，寫下第一筆吧</div>'; return; }
+  el.innerHTML=[...logs].reverse().map((l,ri)=>{
+    const realIdx=logs.length-1-ri;
+    const moodTag=l.mood?`<span class="lmood">${l.mood}</span>`:'';
+    return `<div class="le">
+      <div class="le-top">
+        <span class="ld">${fmtDate(l.date)}</span>
+        ${moodTag}
+        <button class="lx" onclick="delLog(${realIdx})">×</button>
+      </div>
+      <div class="lt">${escHtml(l.text)}</div>
+    </div>`;
+  }).join('');
+}
+
+function delLog(idx){
+  if(!cur||cur.isTheme) return;
+  const data=cur.grid==='outer'?S.outer[cur.secIdx][cur.ci]:S.inner[cur.secIdx][cur.ci];
+  if(!confirm('確定刪除這筆紀錄？')) return;
+  data.logs.splice(idx,1);
+  save(); buildBoard(); renderLogs(data.logs);
+}
+
+function closeSheet(){ document.getElementById('ov').classList.remove('open'); cur=null; }
+function ovClick(e){ if(e.target===document.getElementById('ov'))closeSheet(); }
+
+function switchView(v){
+  view=v;
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('on',(i===0&&v==='outer')||(i===1&&v==='inner'));
+  });
+  buildBoard();
+}
+
+/* ═══════════ INIT ═══════════ */
+initDaily();
+initMemory();
+buildBoard();
+renderActivity();
+</script>
+</body>
+</html>
