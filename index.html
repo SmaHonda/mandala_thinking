@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
 <title>人生支點</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -27,7 +27,10 @@
   --fs:-apple-system,'Helvetica Neue',sans-serif;
   --ff:'Georgia','Noto Serif TC',serif;
 }
-html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x:hidden;color:var(--text)}
+html,body{
+  background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x:hidden;color:var(--text);
+  touch-action:manipulation; /* 優化手機點擊，防止雙擊放大 */
+}
 
 /* ── topbar ── */
 #topbar{
@@ -38,7 +41,7 @@ html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x
 }
 #topbar h1{font-size:16px;font-weight:600;color:var(--green);letter-spacing:.5px}
 .tabs{display:flex;gap:6px}
-.tab{padding:6px 14px;font-size:12px;border-radius:20px;border:1px solid var(--green);background:transparent;color:var(--green);font-family:var(--fs);cursor:pointer;transition:all .2s}
+.tab{padding:6px 12px;font-size:12px;border-radius:20px;border:1px solid var(--green);background:transparent;color:var(--green);font-family:var(--fs);cursor:pointer;transition:all .2s}
 .tab.on{background:var(--green);color:#fff}
 
 /* ── daily card ── */
@@ -70,13 +73,14 @@ html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x
 .mem-parent-btn{margin-top:6px;padding:5px 10px;font-size:11px;background:#8a6fa6;color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:var(--fs)}
 
 /* ── board ── */
-#board-wrap{padding:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+#board-wrap{padding:10px;overflow:hidden;}
 .board{
   display:grid;
   grid-template-columns:repeat(3,1fr) 5px repeat(3,1fr) 5px repeat(3,1fr);
   gap:4px;width:100%;
 }
 .cell{
+  position:relative; /* 為了絕對定位內部小標籤 */
   aspect-ratio:1/1;
   background:var(--card);border:1px solid var(--border);border-radius:6px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -94,18 +98,44 @@ html,body{background:var(--bg);font-family:var(--ff);min-height:100vh;overflow-x
 
 /* cell name */
 .cn{
-  font-size:9px;font-weight:600;color:var(--text);
-  line-height:1.3;word-break:break-all;
+  font-size:9.5px;font-weight:600;color:var(--text);
+  line-height:1.25;word-break:break-all;
   font-family:var(--ff);
   overflow-wrap:break-word;
-  max-width:95%;
+  max-width:92%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:1; /* 讓文字自動撐開垂直空間達成居中 */
+  margin-top:4px;
 }
-.cn.ph{color:var(--muted);font-weight:400;font-style:normal;font-size:8px}
-.cn.wh{color:#fff;font-size:10px;line-height:1.5;font-style:normal;font-weight:600}
-.cn.gn{color:var(--green);font-size:8.5px;font-weight:500}
-.cc{font-size:7.5px;color:var(--sub);margin-top:2px;font-family:var(--fs)}
+.cn.ph{color:var(--muted);font-weight:400;font-style:normal;font-size:8.5px}
+.cn.wh{color:#fff;font-size:10px;line-height:1.4;font-style:normal;font-weight:600;margin-top:0}
+.cn.gn{color:var(--green);font-size:9px;font-weight:500;margin-top:0}
+
+/* 下方狀態文字統一縮小下沉 */
+.cc{font-size:7.5px;color:var(--sub);font-family:var(--fs);margin-bottom:4px;line-height:1}
 .cc.no{color:var(--muted)}
-.cm-badge{font-size:7px;color:var(--warm);background:#fff4e8;padding:0px 3px;border-radius:3px;border:1px solid #ebdcc5;margin-top:2px;font-family:var(--fs)}
+
+/* 馬斯洛小標記改為精緻的絕對定位，貼在右下角，不擠壓四字格子 */
+.cm-badge{
+  position:absolute;
+  bottom:3px;
+  right:3px;
+  font-size:6.5px;
+  color:var(--warm);
+  background:rgba(255,244,232,0.85);
+  padding:0px 2px;
+  border-radius:2px;
+  border:1px solid #ebdcc5;
+  font-family:var(--fs);
+  line-height:1;
+  transform:scale(0.9);
+}
+
+/* ── stream view ── */
+#stream-wrap{display:none;padding:10px 14px}
+.stream-header{font-size:14px;color:var(--green);font-weight:600;margin-bottom:12px;font-family:var(--ff)}
 
 /* ── activity strip ── */
 #activity{
@@ -175,12 +205,17 @@ textarea{resize:none;line-height:1.55}
 .ltags{display:flex;gap:4px;align-items:center}
 .lmood{font-size:10px;color:var(--green);font-family:var(--fs);background:#fff;padding:1px 5px;border-radius:4px;border:1px solid #e1ebe6}
 .lwin{font-size:10px;color:var(--gold);font-weight:600;border:1px solid #f5e4c4;background:#fffaf0;padding:1px 5px;border-radius:4px}
-.lt animate{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-all;font-family:var(--fs)}
-.lparent{margin-top:6px;padding-top:6px;border-top:1px dashed #eae5da;font-size:12px;color:#8a6fa6;font-style:normal}
+.lt-src{font-size:9px;color:var(--muted);background:#fff;padding:1px 4px;border-radius:3px;border:1px solid #e4e0d5;font-family:var(--fs)}
+.lt{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-all;font-family:var(--fs)}
+.lparent{margin-top:6px;padding-top:6px;border-top:1px dashed #eae5da;font-size:12px;color:#8a6fa6;font-style:normal;font-family:var(--fs)}
 .lx{background:none;border:none;font-size:16px;cursor:pointer;color:#ccc;padding:0 2px}
 .lx:active{color:#e24b4a}
 .nolog{font-size:13px;color:var(--muted);font-style:normal;font-family:var(--fs)}
 .theme-note{font-size:12px;color:var(--green);font-family:var(--fs);font-style:normal;padding:4px 0 8px;line-height:1.6}
+
+/* 即時重養區塊 */
+.immediate-parent-zone{background:var(--purple-light);border:1px solid var(--purple-border);border-radius:8px;padding:10px 12px;margin:10px 0}
+.immediate-parent-title{font-size:11px;color:#8a6fa6;font-weight:600;font-family:var(--fs);margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -188,8 +223,9 @@ textarea{resize:none;line-height:1.55}
 <div id="topbar">
   <h1>人生支點</h1>
   <div class="tabs">
-    <button class="tab on" onclick="switchView('outer')">發散</button>
-    <button class="tab"    onclick="switchView('inner')">聚焦</button>
+    <button class="tab on" id="tab-outer" onclick="switchView('outer')">發散</button>
+    <button class="tab"    id="tab-inner" onclick="switchView('inner')">聚焦</button>
+    <button class="tab"    id="tab-stream" onclick="switchView('stream')">河流</button>
   </div>
 </div>
 
@@ -211,6 +247,11 @@ textarea{resize:none;line-height:1.55}
 
 <div id="board-wrap"><div class="board" id="board"></div></div>
 
+<div id="stream-wrap">
+  <div class="stream-header">時光河流（生命軌跡總覽）</div>
+  <div id="stream-list"></div>
+</div>
+
 <div id="activity">
   <div class="act-label">你來過的日子</div>
   <div class="act-dots" id="act-dots"></div>
@@ -229,7 +270,7 @@ textarea{resize:none;line-height:1.55}
 
 <script>
 /* ═══════════ STORE ═══════════ */
-const STORE = 'mandala_v6';
+const STORE = 'mandala_v6_optimized';
 const GAP = new Set([3,7]);
 
 const DEF = [
@@ -260,7 +301,7 @@ function defaultS(){
 let S = (()=>{ try{ const r=localStorage.getItem(STORE); if(r)return JSON.parse(r); }catch(e){} return defaultS(); })();
 let cur = null;
 let view = 'outer';
-let selectedMood = '';
+let selectedMood = '普通';
 let currentMemLogRef = null;
 let currentDayMood = '普通';
 
@@ -273,12 +314,13 @@ function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').r
 function formatCellName(name){
   if(!name) return '';
   const cjk = (name.match(/[\u3000-\u9fff\uf900-\ufaff]/g)||[]).length;
+  // 四個字則中間斷行，維持方塊平衡
   if(cjk === 4 && name.length === 4){ return name.slice(0,2) + '\n' + name.slice(2); }
   return name;
 }
 
 /* ═══════════ DAILY QUESTIONS ═══════════ */
-const QUESTIONS = [
+const QUESTIONS_NORMAL = [
   '今天醒來，身體感覺怎麼樣？',
   '現在最佔據你心思的是什麼？',
   '最近有沒有哪一刻，讓你覺得「這樣就好」？',
@@ -286,39 +328,51 @@ const QUESTIONS = [
   '有沒有什麼事情，你一直想做但還沒開始？',
   '此刻最需要的，是休息還是前進？',
   '你現在信任自己嗎？哪個部分比較難？',
-  '如果今天的你給三個月後的你一句話，會是什麼？',
-  '有沒有什麼人讓你最近感到溫慢？',
-  '你最近有沒有對自己太嚴苛了？',
-  '今天有什麼小事讓你覺得還不錯？',
-  '你現在最想被好好照顧的是哪個部分？',
-  '此刻坐在這裡，你感覺安全嗎？',
-  '有什麼是你早就知道，但還沒準備好面對的？',
+  '如果今天的你給三個月後的你句說話，會是什麼？',
+  '有沒有什麼人讓你最近感到溫暖？',
   '你最近有沒有做到一件讓自己驕傲的小事？',
   '如果你的身體可以說話，它現在會說什麼？',
-  '你現在最需要聽到的一句話是什麼？',
-  '有沒有什麼習慣，是你想重新撿回來的？',
-  '你覺得自己現在在照顧自己嗎？',
+  '你現在最想被好好照顧的是哪個部分？',
   '今天結束之前，你想對自己說什麼？',
+];
+
+const QUESTIONS_HEAVY = [
+  '現在感覺很沉，要不要先把手邊的事放一旁，去喝口水或閉眼五分鐘？',
+  '感到沉重是很真實的信號，今天有沒有哪一個微小的地方可以允許自己「偷懶」一下？',
+  '如果現在不需要扮演任何角色，你的身體最想做什麼？',
+  '內在父母正在抱著你：這不是你的錯，今天我們只做最基本、最舒服的事就好，好嗎？',
+  '此時此刻，有什麼小東西或小聲音能讓你稍微覺得安全、暖和一點點？',
 ];
 
 function initDaily(){
   const today = todayStr();
   if(S.dailyDate !== today){
     S.dailyDate = today;
-    S.dailyIdx = (S.dailyIdx + 1) % QUESTIONS.length;
+    S.dailyIdx = 0;
     save();
   }
-  document.getElementById('daily-q').textContent = QUESTIONS[S.dailyIdx];
+  renderDailyQuestion();
+}
+
+function renderDailyQuestion(){
+  const qEl = document.getElementById('daily-q');
+  if(currentDayMood === '很沉') {
+    const idx = S.dailyIdx % QUESTIONS_HEAVY.length;
+    qEl.textContent = QUESTIONS_HEAVY[idx];
+  } else {
+    const idx = S.dailyIdx % QUESTIONS_NORMAL.length;
+    qEl.textContent = QUESTIONS_NORMAL[idx];
+  }
 }
 
 function nextQ(){
-  S.dailyIdx = (S.dailyIdx + 1) % QUESTIONS.length;
+  S.dailyIdx++;
   save();
-  document.getElementById('daily-q').textContent = QUESTIONS[S.dailyIdx];
+  renderDailyQuestion();
 }
 
 /* ═══════════ MEMORY ═══════════ */
-function initMemory(){
+function initMemory() {
   const all = [];
   S.outer.forEach(sec => sec.forEach(c => c.logs && c.logs.forEach(l => all.push(l))));
   S.inner.forEach(sec => sec.forEach(c => c.logs && c.logs.forEach(l => all.push(l))));
@@ -360,6 +414,7 @@ function recordActivity(){
 function renderActivity(){
   recordActivity();
   const el = document.getElementById('act-dots');
+  if(!el) return;
   el.innerHTML = '';
   const days = 60;
   const today = new Date();
@@ -383,6 +438,7 @@ function pivotName(i){ return S.outer[i][4].name || DEF[i][4]; }
 
 function buildBoard(){
   const board = document.getElementById('board');
+  if(!board) return;
   board.innerHTML = '';
   for(let gr=0;gr<11;gr++){
     for(let gc=0;gc<11;gc++){
@@ -437,7 +493,6 @@ function makeSlot(gr,gc){
     div.appendChild(n);
     div.onclick=()=>openThemeSheet(view==='outer'?'outer-pivot':'inner-pivot',secIdx);
   } else {
-    // 保持原本純淨乾淨的 cell 外觀，不因馬斯洛而變換大格子顏色
     div.className='cell'+(isRecent?' has-recent':(!hasLogs?' empty':''));
     addContent(div,data);
     div.onclick=()=>openLogSheet(view,secIdx,ci);
@@ -455,25 +510,84 @@ function addContent(div,data){
   n.textContent=hasName?formatCellName(data.name):'待定義';
   div.appendChild(n);
   
+  // 右下角微型定位標記，不再擠壓標題空間
   if(data.maslow) {
     const mb = document.createElement('div');
-    mb.className = 'cm-badge'; // 小貼紙標籤維持單一乾淨的大地暖棕色
+    mb.className = 'cm-badge';
     mb.textContent = data.maslow;
     div.appendChild(mb);
   }
 
   const c=document.createElement('div');
-  c.className='cc'+(hasLogs?'':' no');
   const winCount = hasLogs ? data.logs.filter(l => l.isWin).length : 0;
-  const winText = winCount > 0 ? ` 已重塑 ${winCount}` : '';
+  const winText = winCount > 0 ? `·重塑${winCount}` : '';
   
-  if(!hasLogs) {
-    c.textContent = hasName ? '待紀錄' : '待定義';
+  // ── 修正狀態字詞統一 ──
+  if(!hasName) {
+    c.className='cc no';
+    c.textContent = '待定義';
+  } else if(!hasLogs) {
+    c.className='cc no';
+    c.textContent = '待紀錄';
   } else {
+    c.className='cc';
     c.textContent = data.logs.length+'則'+winText;
   }
   
   div.appendChild(c);
+}
+
+/* ═══════════ STREAM VIEW ═══════════ */
+function renderStream() {
+  const el = document.getElementById('stream-list');
+  if(!el) return;
+  
+  let allLogs = [];
+  const grab = (arr, typeLabel) => {
+    arr.forEach((sec, sIdx) => {
+      sec.forEach((cell, cIdx) => {
+        if(cell.logs && cell.logs.length > 0) {
+          cell.logs.forEach(l => {
+            allLogs.push({
+              ...l,
+              sourceGrid: typeLabel,
+              sourceCellName: cell.name || '未命名格子',
+              maslow: cell.maslow || ''
+            });
+          });
+        }
+      });
+    });
+  };
+  
+  grab(S.outer, '發散');
+  grab(S.inner, '聚焦');
+  
+  if(allLogs.length === 0) {
+    el.innerHTML = '<div class="nolog">時光河流裡空空如也，去曼陀羅格子裡寫下第一筆重塑紀錄吧。</div>';
+    return;
+  }
+  
+  allLogs.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  el.innerHTML = allLogs.map(l => {
+    const moodTag = l.mood ? `<span class="lmood">${l.mood}</span>` : '';
+    const winTag = l.isWin ? `<span class="lwin">微小勝利</span>` : '';
+    const maslowTag = l.maslow ? `<span class="lmood" style="color:var(--warm); border-color:#ebdcc5; background:#fff4e8;">${l.maslow}</span>` : '';
+    const parentBox = l.parentResponse ? `<div class="lparent">內在父母：「${escHtml(l.parentResponse)}」</div>` : '';
+    
+    return `<div class="le ${l.isWin?'is-win':''}">
+      <div class="le-top">
+        <span class="ld">${fmtDate(l.date)}</span>
+        <div class="ltags">
+          <span class="lt-src">${l.sourceGrid} · ${esc(l.sourceCellName)}</span>
+          ${maslowTag}${winTag}${moodTag}
+        </div>
+      </div>
+      <div class="lt">${escHtml(l.text)}</div>
+      ${parentBox}
+    </div>`;
+  }).join('');
 }
 
 /* ═══════════ SHEETS ═══════════ */
@@ -526,7 +640,7 @@ function openLogSheet(grid,secIdx,ci){
       smartAlertHtml = `<div class="smart-alert heavy">💡 <b>智慧重塑提醒：</b>目前你感覺「很沉」，而這格屬於高層次需求 (${data.maslow})。請溫柔對待，此時不強求前進，寫下當下的抗拒或放空也是很棒的紀錄。</div>`;
     } else if(currentDayMood === '還不錯' || currentDayMood === '輕一點') {
       smartAlertHtml = `<div class="smart-alert">💡 <b>智慧重塑提醒：</b>現在能量狀態「${currentDayMood}」，很適合為這個 <b>${data.maslow}</b> 主題注入一些主動的探索或小前進喔！</div>`;
-    } else if(data.maslow === 'L1' || data.maslow === 'L2') {
+    } else {
       smartAlertHtml = `<div class="smart-alert">💡 <b>智慧重塑提醒：</b>這格屬於底層核心支點 (${data.maslow})。重養自己的關鍵是先把這裡填穩。不論感覺如何，好好記錄它的狀態。</div>`;
     }
   } else {
@@ -546,7 +660,7 @@ function openLogSheet(grid,secIdx,ci){
       ${data.maslow ? MASLOW_MAP[data.maslow] : '尚未設定層次'}
     </div>
 
-    <label class="fl">現在身體感覺如何？(影響今日決策權重)</label>
+    <label class="fl">現在身體感覺如何？</label>
     <div class="mood-row">
       <button class="mood-btn ${selectedMood==='很沉'?'sel':''}" onclick="updateDialogMood(this,'很沉')">很沉</button>
       <button class="mood-btn ${selectedMood==='普通'?'sel':''}" onclick="updateDialogMood(this,'普通')">普通</button>
@@ -557,9 +671,16 @@ function openLogSheet(grid,secIdx,ci){
     <label class="fl">寫下當下的真實紀錄</label>
     <textarea id="t-inp" rows="4" placeholder="不需要完整，只需要真實。寫下想法、阻礙、或是此刻的現狀…"></textarea>
     
+    <div id="immediate-parent-container" style="display: ${selectedMood==='很沉'?'block':'none'};">
+      <div class="immediate-parent-zone">
+        <div class="immediate-parent-title">🛡️ 內在父母的即時抱抱</div>
+        <input type="text" id="immediate-parent-inp" placeholder="看著此時感到很沉的自己，溫柔地對他說句支持吧（非必填）…">
+      </div>
+    </div>
+
     <div class="win-row" onclick="toggleWinCheckbox()">
       <input type="checkbox" id="win-cb" onclick="event.stopPropagation()">
-      <span class="win-label">[ 慈悲自我 ] 這是一件讓我感到放鬆、被照顧或驕傲的微小勝利 (多巴胺重塑)</span>
+      <span class="win-label">[ 慈悲自我 ] 這是一件讓我感到放鬆、被照顧或驕傲的微小勝利</span>
     </div>
 
     <button class="btn-add" onclick="addLog()">新增紀錄</button>
@@ -597,6 +718,13 @@ function updateDialogMood(btn, mood) {
   selectedMood = mood;
   document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
+  
+  const ipContainer = document.getElementById('immediate-parent-container');
+  if(ipContainer) {
+    ipContainer.style.display = mood === '很沉' ? 'block' : 'none';
+  }
+  
+  renderDailyQuestion();
   
   if(!cur||cur.isTheme) return;
   const data=cur.grid==='outer'?S.outer[cur.secIdx][cur.ci]:S.inner[cur.secIdx][cur.ci];
@@ -640,13 +768,19 @@ function addLog(){
   if(!data.logs) data.logs=[];
   
   const isWin = document.getElementById('win-cb').checked;
+  
+  let parentText = '';
+  const ipInp = document.getElementById('immediate-parent-inp');
+  if(ipInp && selectedMood === '很沉') {
+    parentText = ipInp.value.trim();
+  }
 
   data.logs.push({
     date:new Date().toISOString(),
     text,
     mood:selectedMood,
     isWin:isWin,
-    parentResponse:''
+    parentResponse:parentText
   });
   
   recordActivity();
@@ -654,6 +788,7 @@ function addLog(){
   
   document.getElementById('t-inp').value='';
   document.getElementById('win-cb').checked = false;
+  if(ipInp) ipInp.value = '';
   
   renderLogs(data.logs);
   renderActivity();
@@ -668,7 +803,7 @@ function renderLogs(logs){
     const realIdx=logs.length-1-ri;
     const moodTag=l.mood?`<span class="lmood">${l.mood}</span>`:'';
     const winTag=l.isWin?`<span class="lwin">微小勝利</span>`:'';
-    const parentBox=l.parentResponse?`<div class="lparent">內在父母：「${escHtml(l.parentResponse)}」</div>`:'';
+    const parentBox=l.parentResponse?`<div class="lparent">內在父母：「${escHtml(l.parentResponse)}」</div>` : '';
     
     return `<div class="le ${l.isWin?'is-win':''}">
       <div class="le-top">
@@ -696,10 +831,22 @@ function ovClick(e){ if(e.target===document.getElementById('ov'))closeSheet(); }
 
 function switchView(v){
   view=v;
-  document.querySelectorAll('.tab').forEach((t,i)=>{
-    t.classList.toggle('on',(i===0&&v==='outer')||(i===1&&v==='inner'));
-  });
-  buildBoard();
+  document.getElementById('tab-outer').classList.toggle('on', v === 'outer');
+  document.getElementById('tab-inner').classList.toggle('on', v === 'inner');
+  document.getElementById('tab-stream').classList.toggle('on', v === 'stream');
+
+  const bWrap = document.getElementById('board-wrap');
+  const sWrap = document.getElementById('stream-wrap');
+
+  if(v === 'stream') {
+    bWrap.style.display = 'none';
+    sWrap.style.display = 'block';
+    renderStream();
+  } else {
+    bWrap.style.display = 'block';
+    sWrap.style.display = 'none';
+    buildBoard();
+  }
 }
 
 /* ═══════════ SERVICE WORKER ═══════════ */
