@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-<title>人生支點</title>
+<title>曼陀羅人生支點 · 輕盈重塑</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -80,7 +80,7 @@ html,body{
   gap:4px;width:100%;
 }
 .cell{
-  position:relative; /* 為了絕對定位內部小標籤 */
+  position:relative;
   aspect-ratio:1/1;
   background:var(--card);border:1px solid var(--border);border-radius:6px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -106,7 +106,7 @@ html,body{
   display:flex;
   align-items:center;
   justify-content:center;
-  flex:1; /* 讓文字自動撐開垂直空間達成居中 */
+  flex:1;
   margin-top:4px;
 }
 .cn.ph{color:var(--muted);font-weight:400;font-style:normal;font-size:8.5px}
@@ -117,7 +117,7 @@ html,body{
 .cc{font-size:7.5px;color:var(--sub);font-family:var(--fs);margin-bottom:4px;line-height:1}
 .cc.no{color:var(--muted)}
 
-/* 馬斯洛小標記改為精緻的絕對定位，貼在右下角，不擠壓四字格子 */
+/* 馬斯洛小標記絕對定位，貼在右下角，不擠壓四字格子 */
 .cm-badge{
   position:absolute;
   bottom:3px;
@@ -221,7 +221,7 @@ textarea{resize:none;line-height:1.55}
 <body>
 
 <div id="topbar">
-  <h1>人生支點</h1>
+  <h1>曼陀羅人生支點 · 輕盈重塑</h1>
   <div class="tabs">
     <button class="tab on" id="tab-outer" onclick="switchView('outer')">發散</button>
     <button class="tab"    id="tab-inner" onclick="switchView('inner')">聚焦</button>
@@ -314,7 +314,6 @@ function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').r
 function formatCellName(name){
   if(!name) return '';
   const cjk = (name.match(/[\u3000-\u9fff\uf900-\ufaff]/g)||[]).length;
-  // 四個字則中間斷行，維持方塊平衡
   if(cjk === 4 && name.length === 4){ return name.slice(0,2) + '\n' + name.slice(2); }
   return name;
 }
@@ -510,7 +509,6 @@ function addContent(div,data){
   n.textContent=hasName?formatCellName(data.name):'待定義';
   div.appendChild(n);
   
-  // 右下角微型定位標記，不再擠壓標題空間
   if(data.maslow) {
     const mb = document.createElement('div');
     mb.className = 'cm-badge';
@@ -522,7 +520,6 @@ function addContent(div,data){
   const winCount = hasLogs ? data.logs.filter(l => l.isWin).length : 0;
   const winText = winCount > 0 ? `·重塑${winCount}` : '';
   
-  // ── 修正狀態字詞統一 ──
   if(!hasName) {
     c.className='cc no';
     c.textContent = '待定義';
@@ -850,28 +847,13 @@ function switchView(v){
 }
 
 /* ═══════════ SERVICE WORKER ═══════════ */
-if('serviceWorker' in navigator){
-  const swCode = `
-const CACHE='mandala-v1';
-const FILES=['/'];
-self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));
-  self.skipWaiting();
-});
-self.addEventListener('activate',e=>{
-  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
-  self.clients.claim();
-});
-self.addEventListener('fetch',e=>{
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
-    const clone=res.clone();
-    caches.open(CACHE).then(c=>c.put(e.request,clone));
-    return res;
-  }).catch(()=>caches.match('/'))));
-});`;
-  const blob = new Blob([swCode],{type:'application/javascript'});
-  const swUrl = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl).catch(()=>{});
+// 徹底移除 Blob 網域隔離，強制解註冊舊有的 Service Worker 讓 LocalStorage 回歸正常
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for(let registration of registrations) {
+      registration.unregister();
+    }
+  });
 }
 
 /* ═══════════ INIT ═══════════ */
